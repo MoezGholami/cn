@@ -2,18 +2,30 @@
 #define __cn_ca2_siamoz_packet
 
 #include <cstdint>
+#include <string>
+#include <algorithm>
+#include <sstream>
 
-typedef struct _mac
+using namespace std;
+
+class Macaddr
 {
-	uint8_t bytes[6];
-} macaddr;
+	public:
+		uint8_t bytes[6];
+		Macaddr(uint8_t a1, uint8_t a2, uint8_t a3, uint8_t a4, uint8_t a5, uint8_t a6);
+		Macaddr(string s);
+		Macaddr();
+};
+
+inline bool operator==(const Macaddr &a, const Macaddr &b);
+inline bool operator!=(const Macaddr &a, const Macaddr &b);
 
 //total size 72 bytes (regardless c mem management);
-typedef struct _packet
+typedef struct Packet
 {
 	uint16_t type;
-	uint8_t daddr[6];	//destination mac address
-	uint8_t saddr[6];	// source mac address
+	Macaddr daddr;	//destination mac address
+	Macaddr saddr;	// source mac address
 
 	/*
 	 * id for a packet for concatinating it,
