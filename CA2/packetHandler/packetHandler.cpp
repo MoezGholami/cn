@@ -13,7 +13,7 @@ vector<Packet> PacketHandler::packetVectorOfMessage(Message m)
 		result.push_back(packetOfMessage(Message(m.value.substr(23*i, 23), m.senderadr, m.receiveradr, m.number), 2*i));
 	if(m.value.size()%23)
 		result.push_back(packetOfMessage(Message(m.value.substr(23*i, m.value.size()%23), m.senderadr, m.receiveradr
-							,m.number), 2*(i+1)));
+							,m.number), 2*(i)));
 	if(result.size()!=0)
 		result[result.size()-1].packid=result[result.size()-1].packid + 1 ; //indicate last bit of message
 	return result;

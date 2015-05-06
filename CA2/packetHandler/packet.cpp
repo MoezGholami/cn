@@ -13,14 +13,14 @@ Macaddr::Macaddr(uint8_t a1, uint8_t a2, uint8_t a3, uint8_t a4, uint8_t a5, uin
 Macaddr::Macaddr(string s)
 {
 	stringstream ss;
-	uint8_t temp;
+	int temp;
 	replace(s.begin(), s.end(), ':', ' ');
 	replace(s.begin(), s.end(), '.', ' ');
 	ss<<s;
 	for(unsigned i=0; i<6; ++i)
 	{
 		ss>>temp;
-		bytes[i]=temp;
+		bytes[i]=(uint8_t)temp;
 	}
 }
 
@@ -54,4 +54,19 @@ bool Macaddr::operator<(const Macaddr &b) const
 		else if(bytes[i]>b.bytes[i])
 			return true;
 	return false;//same
+}
+
+ostream& operator<<(ostream &out, const Macaddr &ma)
+{
+	out<<"bytes: ";
+	for(int i=0; i<6; ++i)
+		out<<(int)ma.bytes[i]<<" ";
+	out<<endl;
+	return out;
+}
+
+ostream& operator<<(ostream &out, const Packet &p)
+{
+	out<<"sender:\n"<<p.saddr<<endl<<"receiver:\n"<<p.daddr<<endl;
+	return out;
 }

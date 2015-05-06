@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -21,6 +22,8 @@ class Macaddr
 		bool operator!=(const Macaddr &b) const;
 		bool operator<(const Macaddr &b)  const;
 };
+
+ostream& operator<<(ostream &out, const Macaddr &ma);
 
 //total size 72 bytes (regardless c mem management);
 typedef struct Packet
@@ -45,7 +48,9 @@ typedef struct Packet
 
 	uint8_t data[23];	//the main data
 
-	//uint8_t crc[6];		//crc check
+	uint8_t crc[6];		//crc check
 } Packet;
+
+ostream& operator<<(ostream &out, const Packet &p);
 
 #endif
