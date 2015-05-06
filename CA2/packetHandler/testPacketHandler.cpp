@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
 	if(a==b)
 		cout<<"mosavi\n";
-	vector<Packet> packs=ph.packetVectorOfMessage(Message("ssssssssssssssssssssssss", a, b, 255));
+	vector<Packet> packs=ph.packetVectorOfMessage(Message("ssssssssssssssssssssssssssss", a, b, 255));
 	p=packs[0];
 
 	cout<<"p type: "<<(unsigned) p.type<<endl;
