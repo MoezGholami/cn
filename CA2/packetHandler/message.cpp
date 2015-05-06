@@ -1,6 +1,6 @@
 #include "message.h"
 
-Message::Message(string val, Macaddr sadr, Macaddr recadr, uint8_t mn)
+Message::Message(const string &val, Macaddr sadr, Macaddr recadr, uint8_t mn)
 {
 	value=val;
 	senderadr=sadr;

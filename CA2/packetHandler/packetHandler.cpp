@@ -38,11 +38,62 @@ Packet PacketHandler::packetOfMessage(Message m, uint32_t packnumber)
 	for(i=0; i<6; ++i)
 		result.crc[i]=0;
 	crcPos=(uint32_t *)&(result.crc[0]);
-	*crcPos=siamoz_crc32(siamoz_crc32_tab[15],&(result.data[0]),23);
+	*crcPos=siamoz_crc32(&(result.data[0]),23);
 	return result;
 }
 
-Message* PacketHandler::messageOfPackets(vector<Packet> &packets)
+Message* PacketHandler::messageOfPackets(Packet p)
 {
-	return 0;
+	vector<Packet>::iterator it;
+	it=find_if(allPackets.begin(), allPackets.end(),PacketFinderWithCompleteID(p));
+	if(it!=allPackets.end())
+		return 0;	//return null if duplicate packet
+	allPackets.push_back(p);
+	return getMessageFromPacketVector(p);
+}
+
+Message* PacketHandler::getMessageFromPacketVector(const Packet &sample)
+{
+	string resultVal="";
+	uint32_t i=0;
+	vector<Packet>::iterator it;
+	for(i=0; true; i+=2)
+	{
+		it=find_if(allPackets.begin(), allPackets.end(), PacketFinderWithCompleteID(sample.daddr,
+							sample.saddr,*((uint8_t *)(&(sample.packid))), i));
+		if(it==allPackets.end())
+			break ;
+		resultVal+=(char *)(it->data);
+	}
+	it=find_if(allPackets.begin(), allPackets.end(), PacketFinderWithCompleteID(sample.daddr,
+						sample.saddr,*((uint8_t *)(&(sample.packid))), i+1));
+	if(it==allPackets.end())
+		return 0;
+	resultVal+=(char *)(it->data);
+	return new Message(resultVal, sample.saddr, sample.daddr, *((uint8_t *)(&(sample.packid))));
+}
+
+PacketFinderWithCompleteID::PacketFinderWithCompleteID(Macaddr r, Macaddr s, uint8_t mn, uint32_t pid)
+{
+	sender=s;
+	receiver=r;
+	packid=pid|((uint32_t)((mn)<<24));
+};
+
+PacketFinderWithCompleteID::PacketFinderWithCompleteID(const Packet &p)
+{
+	sender=p.saddr;
+	receiver=p.daddr;
+	packid=p.packid;
+};
+
+bool PacketFinderWithCompleteID::operator()(const Packet &p)
+{
+	if(p.daddr!=receiver)
+		return false;
+	if(p.saddr!=sender)
+		return false;
+	if(p.packid!=packid)
+		return false;
+	return true;
 }

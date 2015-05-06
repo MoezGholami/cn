@@ -13,7 +13,7 @@ class Message
 		Macaddr receiveradr;
 		string value;
 		uint8_t number;
-		Message(string val, Macaddr sadr, Macaddr recadr, uint8_t mn);
+		Message(const string &val, Macaddr sadr, Macaddr recadr, uint8_t mn);
 };
 
 #endif

@@ -29,39 +29,28 @@ Macaddr::Macaddr()
 		bytes[i]=0;
 }
 
-bool operator==(const Macaddr &a, const Macaddr &b)
+bool Macaddr::operator==(const Macaddr &b) const
 {
 	for(unsigned i=0; i<6; ++i)
-		if(a.bytes[i]!=b.bytes[i])
+		if(bytes[i]!=b.bytes[i])
 			return false;
 	return true;
 }
 
-bool operator!=(const Macaddr &a, const Macaddr &b)
-{
-	return !(a==b);
-}
-
-bool operator<(const Macaddr &a, const Macaddr &b)
+bool Macaddr::operator!=(const Macaddr &b) const
 {
 	for(unsigned i=0; i<6; ++i)
-		if(a.bytes[i]<b.bytes[i])
-			return false;
-		else if(a.bytes[i]>b.bytes[i])
+		if(bytes[i]!=b.bytes[i])
 			return true;
-	return false;//same
+	return false;
 }
 
-uint32_t
-siamoz_crc32(uint32_t crc, const void *buf, size_t size)
+bool Macaddr::operator<(const Macaddr &b) const
 {
-    const uint8_t *p;
-    
-    p = (const uint8_t *)buf;
-    crc = crc ^ ~0U;
-    
-    while (size--)
-        crc = siamoz_crc32_tab[(crc ^ *p++) & 0xFF] ^ (crc >> 8);
-    
-    return crc ^ ~0U;
+	for(unsigned i=0; i<6; ++i)
+		if(bytes[i]<b.bytes[i])
+			return false;
+		else if(bytes[i]>b.bytes[i])
+			return true;
+	return false;//same
 }
