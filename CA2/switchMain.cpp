@@ -15,8 +15,8 @@ int main(int argn, char** args)
 {
 	int port_number = atoi(args[1]);
 	const int num_of_connection = 4;
-	string mac = args[2];
-	char *directory_name = args[2];
+	//string mac = args[2];
+	//char *directory_name = args[2];
 	int server_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
