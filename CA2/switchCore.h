@@ -9,14 +9,40 @@
 #include <ctime>
 #include <sstream>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <errno.h>
+#include <iostream>
+#include <string.h>
+#include <arpa/inet.h>
+#include <map>
+
+#include "packetHandler/packetHandler.h"
+
+
 using namespace std;
 
-class SwitchCoreClass{
-	public:
-	SwitchCoreClass();	
-	void doServerCommand();
-	void doClientCommand(string comm);
+struct Macfd{
+	Macaddr macaddr;
+	int filedis;
+};
 
+class SwitchCoreClerk{
+	public:
+	SwitchCoreClerk(int port_num);	
+	int sourceExist(Packet comm);
+	void doServerCommand();
+	void forwardClientPacket(Packet comm,int fd);
+	void addFileDescriptor(int fd){
+		fds.push_back(fd);
+	}
+	PacketHandler ph;
+	private:
+	vector<int> fds;
+	int port;
+	vector< Macfd > routingTable;
 };
 
 

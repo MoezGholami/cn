@@ -14,10 +14,19 @@ using namespace std;
 const string adminPass = "1234";
 const string adminName = "Admin";
 
+
 void clear_buff(char *x,size_t s){
 	for(int i=0;i<s;i++){
 		x[i] = 0;
 	}
+}
+
+int send_packet(string x, int fd){
+	return write(fd, x.c_str(), x.size());
+}
+
+int recv_packet(char *x, int fd){
+	return read(fd, x , STR_SIZE);
 }
 
 int main(int argn, char** args){
@@ -63,7 +72,7 @@ int main(int argn, char** args){
 			else cerr<<"Successfully Connected\n";
 			// test R&D
 			string qwe = "sending";
-			int bytes_written = write(fd, qwe.c_str(), qwe.size());
+			int bytes_written = send_packet(qwe,fd);
 			if(bytes_written < 0){
 				cerr<<"Packet not sent"<<endl;
 				continue;
@@ -72,7 +81,7 @@ int main(int argn, char** args){
 			//get response from server
 			char res_buff[STR_SIZE];
 			clear_buff(res_buff, STR_SIZE);
-			int read_status = read(fd, res_buff, STR_SIZE);
+			int read_status = recv_packet(res_buff, fd);
 			reply = res_buff;
 			cout<<res_buff<<endl;
 			// Eof test R&D
@@ -88,7 +97,7 @@ int main(int argn, char** args){
 					ss >> parse1 >> parse2 >> parse3 ;
 					if(parse1 == "List" && parse2 == "of" && parse3 == "Services"){
 						clientComm = "GETSERVICES";
-						int bytes_written = write(fd, clientComm.c_str(), clientComm.size());
+						int bytes_written = send_packet(clientComm,fd);
 						if(bytes_written < 0){
 						cerr<<"Packet not sent"<<endl;
 						continue;
@@ -97,7 +106,7 @@ int main(int argn, char** args){
 						//get response from server
 						char res_buff[STR_SIZE];
 						clear_buff(res_buff, STR_SIZE);
-						int read_status = read(fd, res_buff, STR_SIZE);
+						int read_status = recv_packet(res_buff,fd);
 						reply = res_buff;
 						cout<<res_buff<<endl;
 
@@ -105,7 +114,7 @@ int main(int argn, char** args){
 				} else if(parse1 == "Request" ){
 					ss >> parse1 >> parse2 ;
 					clientComm = origin;
-					int bytes_written = write(fd, clientComm.c_str(), clientComm.size());
+					int bytes_written = send_packet(clientComm, fd);
 					if(bytes_written < 0){
 					cerr<<"Packet not sent"<<endl;
 					continue;
@@ -114,7 +123,7 @@ int main(int argn, char** args){
 					//get response from server
 					char res_buff[STR_SIZE];
 					clear_buff(res_buff, STR_SIZE);
-					int read_status = read(fd, res_buff, STR_SIZE);
+					int read_status = recv_packet(res_buff, fd);
 					reply = res_buff;
 					cout<<res_buff<<endl;
 
@@ -124,7 +133,7 @@ int main(int argn, char** args){
 					// Append the FILE
 				} else if(parse1 == "Logout"){
 					clientComm = origin;
-					int bytes_written = write(fd, clientComm.c_str(), clientComm.size());
+					int bytes_written = send_packet(clientComm,fd);
 					if(bytes_written < 0){
 					cerr<<"Packet not sent"<<endl;
 					continue;
@@ -136,7 +145,7 @@ int main(int argn, char** args){
 				{
 					
 					//send command for server
-					int bytes_written = write(fd, origin.c_str(), origin.size());
+					int bytes_written = send_packet(origin, fd);
 					if(bytes_written < 0){
 						cerr<<"Packet not sent"<<endl;
 						continue;
@@ -145,7 +154,7 @@ int main(int argn, char** args){
 					//get response from server
 					char res_buff[STR_SIZE];
 					clear_buff(res_buff, STR_SIZE);
-					int read_status = read(fd, res_buff, STR_SIZE);
+					int read_status = recv_packet(res_buff, fd);
 					reply = res_buff;
 					cout<<res_buff<<endl;
 				}

@@ -1,11 +1,3 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <errno.h>
-#include <iostream>
-#include <string.h>
-#include <arpa/inet.h>
 #include "switchCore.h"
 using namespace std;
 
@@ -21,15 +13,16 @@ void clear_buff(char *x,size_t s){
 #define STR_SIZE 20480
 int main(int argn, char** args)
 {
-	int port_number = 2020;
+	int port_number = atoi(args[1]);
 	const int num_of_connection = 4;
+	string mac = args[2];
 	char *directory_name = args[2];
 	int server_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(port_number);
-	SwitchCoreClerk scc;
+	SwitchCoreClerk scc(port_number);
 	string capu;
 
 	char res_buff[STR_SIZE];
@@ -90,6 +83,7 @@ int main(int argn, char** args)
 				else if(it_fd == server_fd)
 				{	
 					new_sock_fd = accept(server_fd, NULL, NULL);
+					scc.addFileDescriptor(new_sock_fd);
 					if(new_sock_fd < 0)
 					{
 						cerr<<"error on accepting.\n";
@@ -102,10 +96,11 @@ int main(int argn, char** args)
 				{
 					int n, m;
 					char buff_read [STR_SIZE], response_buff[STR_SIZE];
-					clear_buff(buff_read, STR_SIZE);
-					clear_buff(response_buff, STR_SIZE);
+					Packet sendingPacket;
+					//clear_buff(buff_read, STR_SIZE);
+					//clear_buff(response_buff, STR_SIZE);
 
-					n = read(it_fd, buff_read, STR_SIZE-1);
+					n = read(it_fd, (char*)(&sendingPacket), sizeof(Packet));
 					if(n == 0)
 					{
 						close(it_fd);
@@ -120,16 +115,11 @@ int main(int argn, char** args)
 					//after reading successfully
 					else
 					{
-						if( string(buff_read) != "DC")
-						{
-							string clientInput = buff_read, serverReply;
-							//TODO create wrapper
-							//serverReply = scc.doClientCommand(clientInput);
-							serverReply = clientInput;
-							int s = write(it_fd, serverReply.c_str(), serverReply.size());
-							if(s < 0)
-								cerr<<"send reply error\n";
-						}
+						//TODO create wrapper
+						scc.forwardClientPacket(sendingPacket, it_fd);
+						//int s = write(it_fd, (char*)(&sendingPacket), sizeof(Packet));
+						//if(s < 0)
+						//	cerr<<"send reply error\n";
 						/*else if(mystrcmp(buff_read, "DC") == 0)
 						{
 							write(it_fd, "Disconnecting in Progress ...\n",

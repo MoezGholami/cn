@@ -1,7 +1,7 @@
 #ifndef __cn_ca2_siamoz_packet
 #define __cn_ca2_siamoz_packet
 
-#include <cstdint>
+#include <stdint.h>
 #include <string>
 #include <algorithm>
 #include <sstream>
