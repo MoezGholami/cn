@@ -10,9 +10,10 @@ vector<Packet> PacketHandler::packetVectorOfMessage(Message m, uint8_t messageNu
 	int i;
 
 	for(i=0; i<m.value.size()/23; ++i)
-		result.push_back(packetOfMessage(Message(m.value.substr(23*i, 23), m.senderadr, m.receiveradr), 2*i));
+		result.push_back(packetOfMessage(Message(m.value.substr(23*i, 23), m.senderadr, m.receiveradr, m.number), 2*i));
 	if(m.value.size()%23)
-		result.push_back(packetOfMessage(Message(m.value.substr(23*i, m.value.size()%23), m.senderadr, m.receiveradr), 2*(i+1)));
+		result.push_back(packetOfMessage(Message(m.value.substr(23*i, m.value.size()%23), m.senderadr, m.receiveradr
+							,m.number), 2*(i+1)));
 	if(result.size()!=0)
 		result[result.size()-1].packid=result[result.size()-1].packid + 1 ; //indicate last bit of message
 	return result;
@@ -36,7 +37,12 @@ Packet PacketHandler::packetOfMessage(Message m, uint32_t packnumber)
 		result.data[i]=0;
 	for(i=0; i<6; ++i)
 		result.crc[i]=0;
-	crcPos=&(result.crc[0]);
+	crcPos=(uint32_t *)&(result.crc[0]);
 	*crcPos=crc32(crc32_tab[15],&(result.data[0]),23);
 	return result;
+}
+
+Message* PacketHandler::messageOfPackets(vector<Packet> &packets)
+{
+	return 0;
 }

@@ -11,8 +11,11 @@ class PacketHandler
 {
 	public:
 		PacketHandler();
-		vector<Packet> packetsOfMessage(Message m, uint8_t messageNumber);
-		Message messageOfPackets(vector<Packet> &packets);
+		vector<Packet> packetVectorOfMessage(Message m, uint8_t messageNumber);
+		Message* messageOfPackets(vector<Packet> &packets);
+
+	protected:
+		Packet packetOfMessage(Message m, uint32_t packnumber);
 };
 
 #endif
