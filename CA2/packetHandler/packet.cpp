@@ -29,7 +29,7 @@ Macaddr::Macaddr()
 		bytes[i]=0;
 }
 
-inline bool operator==(const Macaddr &a, const Macaddr &b)
+bool operator==(const Macaddr &a, const Macaddr &b)
 {
 	for(unsigned i=0; i<6; ++i)
 		if(a.bytes[i]!=b.bytes[i])
@@ -37,7 +37,17 @@ inline bool operator==(const Macaddr &a, const Macaddr &b)
 	return true;
 }
 
-inline bool operator!=(const Macaddr &a, const Macaddr &b)
+bool operator!=(const Macaddr &a, const Macaddr &b)
 {
 	return !(a==b);
+}
+
+bool operator<(const Macaddr &a, const Macaddr &b)
+{
+	for(unsigned i=0; i<6; ++i)
+		if(a.bytes[i]<b.bytes[i])
+			return false;
+		else if(a.bytes[i]>b.bytes[i])
+			return true;
+	return false;//same
 }
