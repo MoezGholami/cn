@@ -21,7 +21,6 @@ vector<Packet> PacketHandler::packetVectorOfMessage(Message m)
 
 Packet PacketHandler::packetOfMessage(Message m, uint32_t packnumber)
 {
-	uint32_t *crcPos;
 	Packet result;
 	unsigned i=0;
 
@@ -35,10 +34,13 @@ Packet PacketHandler::packetOfMessage(Message m, uint32_t packnumber)
 		result.data[i]=(uint8_t)m.value[i];
 	for(; i<23; ++i)
 		result.data[i]=0;
+	/*
 	for(i=0; i<6; ++i)
 		result.crc[i]=0;
+	uint32_t *crcPos;
 	crcPos=(uint32_t *)&(result.crc[0]);
 	*crcPos=siamoz_crc32(&(result.data[0]),23);
+	*/
 	return result;
 }
 

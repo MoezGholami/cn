@@ -45,7 +45,7 @@ typedef struct Packet
 
 	uint8_t data[23];	//the main data
 
-	uint8_t crc[6];		//crc check
+	//uint8_t crc[6];		//crc check
 } Packet;
 
 #endif
