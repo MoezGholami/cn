@@ -3,7 +3,6 @@
 
 #include "packet.h"
 #include "message.h"
-#include "crc32.h"
 #include <vector>
 
 using namespace std;

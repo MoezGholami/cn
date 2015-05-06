@@ -38,7 +38,7 @@ Packet PacketHandler::packetOfMessage(Message m, uint32_t packnumber)
 	for(i=0; i<6; ++i)
 		result.crc[i]=0;
 	crcPos=(uint32_t *)&(result.crc[0]);
-	*crcPos=crc32(crc32_tab[15],&(result.data[0]),23);
+	*crcPos=siamoz_crc32(siamoz_crc32_tab[15],&(result.data[0]),23);
 	return result;
 }
 
