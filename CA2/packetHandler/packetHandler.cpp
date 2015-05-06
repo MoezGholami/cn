@@ -4,7 +4,7 @@ PacketHandler::PacketHandler()
 {
 }
 
-vector<Packet> PacketHandler::packetVectorOfMessage(Message m, uint8_t messageNumber)
+vector<Packet> PacketHandler::packetVectorOfMessage(Message m)
 {
 	vector<Packet> result;
 	int i;

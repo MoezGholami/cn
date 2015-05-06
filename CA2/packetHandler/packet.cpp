@@ -15,6 +15,7 @@ Macaddr::Macaddr(string s)
 	stringstream ss;
 	uint8_t temp;
 	replace(s.begin(), s.end(), ':', ' ');
+	replace(s.begin(), s.end(), '.', ' ');
 	ss<<s;
 	for(unsigned i=0; i<6; ++i)
 	{

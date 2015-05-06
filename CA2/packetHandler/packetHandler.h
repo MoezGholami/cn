@@ -13,7 +13,7 @@ class PacketHandler
 {
 	public:
 		PacketHandler();
-		vector<Packet> packetVectorOfMessage(Message m, uint8_t messageNumber);
+		vector<Packet> packetVectorOfMessage(Message m);
 		Message* messageOfPackets(Packet p);
 
 	protected:
