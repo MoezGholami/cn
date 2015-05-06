@@ -24,20 +24,21 @@
 
 using namespace std;
 
-struct Macfd{
-	Macaddr macaddr;
-	int filedis;
+class Macfd{
+	public:
+	Macfd(Macaddr mc,int filedis);
+	Macaddr mac;
+	int fd;
 };
 
 class SwitchCoreClerk{
 	public:
 	SwitchCoreClerk(int port_num);	
-	int sourceExist(Packet comm);
+	int updateSourcePort(Packet comm,int fd);
+	int getDestinationPort(Packet comm);
 	void doServerCommand();
 	void forwardClientPacket(Packet comm,int fd);
-	void addFileDescriptor(int fd){
-		fds.push_back(fd);
-	}
+	void addFileDescriptor(int fd);
 	PacketHandler ph;
 	private:
 	vector<int> fds;

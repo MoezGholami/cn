@@ -4,6 +4,11 @@ SwitchCoreClerk::SwitchCoreClerk(int port_num){
 	port = port_num;
 }
 
+Macfd::Macfd(Macaddr mc,int filedis){
+	mac = mc;
+	fd = filedis;
+}
+
 void SwitchCoreClerk::doServerCommand(){
 	string comm1,comm2;
 	cin>>comm1;
@@ -36,21 +41,47 @@ void SwitchCoreClerk::doServerCommand(){
 
 }
 
-
-void SwitchCoreClerk::forwardClientPacket(Packet comm, int fd){
-	routingTable[comm.saddr] = fd;
-	for(map<Macaddr,int>::iterator it=routingTable.begin();it!=routingTable.end();++it){
-		if( it->first == comm.daddr ){
-			int s = write(it->second, (char*)(&comm), sizeof(Packet));
-			if(s < 0)
-				cerr<<"send reply error\n";
-			return;
+int SwitchCoreClerk::updateSourcePort(Packet comm, int fd){
+	for(int i=0;i<routingTable.size();i++){
+		if(routingTable[i].mac == comm.saddr ){
+			return i;
 		}
 	}
-	for(int i=0;i<fds.size();i++){	
-		int s = write(fds[i], (char*)(&comm), sizeof(Packet));
+	routingTable.push_back(Macfd(comm.saddr,fd) );
+	return routingTable.size()-1;
+}
+
+int SwitchCoreClerk::getDestinationPort(Packet comm){
+	for(int i=0;i<routingTable.size();i++){
+		if(routingTable[i].mac == comm.daddr){
+			return routingTable[i].fd;
+		}
+	}
+	return -1;
+}
+
+void SwitchCoreClerk::addFileDescriptor(int fd){
+	fds.push_back(fd);
+}
+
+
+void SwitchCoreClerk::forwardClientPacket(Packet comm, int fd){
+	//routingTable[comm.saddr] = fd;
+	int sourcefd = updateSourcePort(comm,fd);
+	int destfd = getDestinationPort(comm);
+	if(destfd!=-1){
+		int s = write(destfd, (char*)(&comm), sizeof(Packet));
+		if(s < 0)
+			cerr<<"send reply error\n";
+		return;
+	} else {
+		for(int i=0;i<fds.size();i++){	
+		if(fds[i]!=fd){
+			int s = write(fds[i], (char*)(&comm), sizeof(Packet));
 			if(s < 0)
 				cerr<<"send reply error\n";
+			}
+		}
 	}
 }
 
