@@ -1,6 +1,6 @@
-#include "packet.h"
-#include "message.h"
-#include "packetHandler.h"
+#include "./packetHandler/message.h"
+#include "./packetHandler/packetHandler.h"
+#include "./packetHandler/packet.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -26,7 +26,7 @@ void clear_buff(char *x,size_t s){
 
 int send_packet(string clientComm, int fd, string clientMacAddr,int gMID){
 	int s;
-	packetHandler ph;
+	PacketHandler ph;
 	vector<Packet> packets = ph.packetVectorOfMessage(Message(clientComm,clientMacAddr,serverMacAddr,gMID));
 		for(int i=0;i<packets.size();i++){
 			s = write(fd, (char*)(&packets[i]), sizeof(Packet));
@@ -34,11 +34,11 @@ int send_packet(string clientComm, int fd, string clientMacAddr,int gMID){
 	return s;
 }
 
-string recv_packet(char *serverReply, int fd){
+int recv_packet(char *serverReply, int fd){
 	int n;
-	packetHandler ph;
-	packet recvPacket ;
-	message *mssg = NULL;
+	PacketHandler ph;
+	Packet recvPacket ;
+	Message *mssg = NULL;
 	while( mssg != NULL){
 		n = read(fd, (char*)(&recvPacket), sizeof(Packet));
 		mssg = ph.messageOfPackets(recvPacket);
@@ -46,7 +46,7 @@ string recv_packet(char *serverReply, int fd){
 			return n;
 		}
 	}
-	serverReply = mssg->value;
+	serverReply = &(mssg->value[0]);
 	return n;
 }
 
@@ -61,7 +61,7 @@ int main(int argn, char** args){
 	while(cin>>inputComm)
 	{
 		if(inputComm != "Login"){
-			cout<<"Please loggin first ...\n";
+			cout<<"Please login first ...\n";
 			continue;
 		} else {
 			cin>>inputComm>>inputComm;
@@ -93,8 +93,9 @@ int main(int argn, char** args){
 				}
 				else cerr<<"Successfully Connected\n";
 				// test R&D
-				string qwe = "sending";
+			/*	string qwe = "sending";
 				int bytes_written = send_packet(qwe,fd);
+							int bytes_written = send_packet(clientComm,fd,clientMacAddr,gMID);
 				if(bytes_written < 0){
 					cerr<<"Packet not sent"<<endl;
 					continue;
@@ -105,8 +106,9 @@ int main(int argn, char** args){
 				clear_buff(res_buff, STR_SIZE);
 				int read_status = recv_packet(res_buff, fd);
 				reply = res_buff;
-				cout<<res_buff<<endl;
+				cout<<res_buff<<endl;*/
 				// Eof test R&D
+				string clientComm,reply;
 				while(1)
 				{
 					//read command
@@ -166,7 +168,7 @@ int main(int argn, char** args){
 						// Append the FILE
 					} else if(parse1 == "Logout"){
 						clientComm = origin;
-						int bytes_written = send_packet(clientComm,fd);
+						int bytes_written = send_packet(clientComm,fd,clientMacAddr,gMID);
 						if(bytes_written < 0){
 						cerr<<"Packet not sent"<<endl;
 						continue;

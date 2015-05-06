@@ -67,6 +67,12 @@ void SwitchCoreClerk::addFileDescriptor(int fd){
 
 void SwitchCoreClerk::forwardClientPacket(Packet comm, int fd){
 	//routingTable[comm.saddr] = fd;
+	cout<<"forwarding packet..."<<endl;
+	char x[24] = { 0 };
+	memcpy(x,comm.data,23);
+	string mes;
+	mes = x;
+	cout<<"pp packet: "<<mes<<endl;
 	int sourcefd = updateSourcePort(comm,fd);
 	int destfd = getDestinationPort(comm);
 	if(destfd!=-1){
