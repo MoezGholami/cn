@@ -21,5 +21,7 @@ int main(int argc, char *argv[])
 	for(int i=0; i<(int)packs.size(); ++i)
 		fout.write((const char *)&(packs[i]), sizeof(Packet));
 	fout.close();
+	ifstream fin("temp.txt");
+	Packet p;
 	return 0;
 }
