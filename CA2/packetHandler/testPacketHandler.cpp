@@ -10,6 +10,7 @@ int main(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
 {
+	string tempFileName="temp.txt";
 	PacketHandler ph;
 	Packet p;
 	cout<<"size of packet (in mem management): "<<sizeof(Packet)<<endl;
@@ -20,20 +21,20 @@ int main(int argc, char *argv[])
 
 	if(a==b)
 		cout<<"mosavi\n";
-	vector<Packet> packs=ph.packetVectorOfMessage(Message("ssssssssssssssssssssssssssss", a, b, 255));
+	vector<Packet> packs=ph.packetVectorOfMessage(Message("s", a, b, 255));
 	p=packs[0];
 
 	cout<<"p type: "<<(unsigned) p.type<<endl;
 	cout<<"p saddr: "<<p.saddr<<endl;
 	cout<<"p saddr: "<<p.daddr<<endl;
 
-	ofstream fout("temp.txt");
+	ofstream fout(tempFileName.c_str());
 	for(int i=0; i<(int)packs.size(); ++i)
 		fout.write((const char *)&(packs[i]), sizeof(Packet));
 	fout.close();
-	ifstream fin("temp.txt");
+	ifstream fin(tempFileName.c_str());
 	Message *m;
-	for(int i=0; i<2; ++i)
+	for(int i=0; i<1; ++i)
 	{
 		fin.read((char*)&p, sizeof(Packet));
 		m=ph.messageOfPackets(p);
@@ -44,5 +45,6 @@ int main(int argc, char *argv[])
 		return -1;
 	cout<<"payam:\n"<<m->value<<endl<<endl;
 	fin.close();
+	system(("rm "+tempFileName).c_str());
 	return 0;
 }

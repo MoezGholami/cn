@@ -13,6 +13,7 @@ class PacketHandler
 {
 	public:
 		PacketHandler();
+		~PacketHandler();
 		vector<Packet> packetVectorOfMessage(Message m);
 		Message* messageOfPackets(Packet p);
 
@@ -20,6 +21,7 @@ class PacketHandler
 		Packet packetOfMessage(Message m, uint32_t packnumber);
 		Message* getMessageFromPacketVector(const Packet &sample);
 		vector<Packet> allPackets;
+		Message *givingMessage;
 };
 
 class PacketFinderWithCompleteID

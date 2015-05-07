@@ -2,6 +2,14 @@
 
 PacketHandler::PacketHandler()
 {
+	givingMessage=0;
+}
+
+PacketHandler::~PacketHandler()
+{
+	if(givingMessage!=0)
+		delete givingMessage;
+	givingMessage=0;
 }
 
 vector<Packet> PacketHandler::packetVectorOfMessage(Message m)
@@ -75,7 +83,10 @@ Message* PacketHandler::getMessageFromPacketVector(const Packet &sample)
 		return 0;
 	memcpy((void *)buffer, it->data, 23);
 	resultVal+=buffer;
-	return new Message(resultVal, sample.saddr, sample.daddr, *((uint8_t *)(&(sample.packid))));
+	if(givingMessage!=0)
+		delete givingMessage;
+	givingMessage= new Message(resultVal, sample.saddr, sample.daddr, *((uint8_t *)(&(sample.packid))));
+	return givingMessage;
 }
 
 PacketFinderWithCompleteID::PacketFinderWithCompleteID(Macaddr r, Macaddr s, uint8_t mn, uint32_t pid)
