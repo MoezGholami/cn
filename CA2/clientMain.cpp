@@ -39,13 +39,16 @@ int recv_packet(char *serverReply, int fd){
 	PacketHandler ph;
 	Packet recvPacket ;
 	Message *mssg = NULL;
-	while( mssg != NULL){
+	while( mssg == NULL){
 		n = read(fd, (char*)(&recvPacket), sizeof(Packet));
 		mssg = ph.messageOfPackets(recvPacket);
 		if( n<0 ){
 			return n;
 		}
 	}
+	if(mssg==NULL)
+		cout<<"WTF"<<endl;
+	cerr<<"nulled"<<endl;
 	serverReply = &(mssg->value[0]);
 	return n;
 }

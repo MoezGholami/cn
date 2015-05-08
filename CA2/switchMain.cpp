@@ -116,6 +116,7 @@ int main(int argn, char** args)
 					else
 					{
 						//TODO create wrapper
+
 						scc.forwardClientPacket(sendingPacket, it_fd);
 						//int s = write(it_fd, (char*)(&sendingPacket), sizeof(Packet));
 						//if(s < 0)
