@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 				if(it_fd==STDIN)
 				{
 					incommingFD=core.doServerCommand();
-					if(incommingFD)
+					if(incommingFD && !FD_ISSET(incommingFD,&read_fdset))
 						FD_SET(incommingFD, &read_fdset);
 				}
 				else if(it_fd==incommingFD)
@@ -60,16 +60,20 @@ int main(int argc, char* argv[])
 					m=ph.messageOfPackets(p);
 					if(m)
 					{
-						Message response=core.handleClientMessage(*m);
-						vector<Packet> sendingpacks=ph.packetVectorOfMessage(response);
-						for(unsigned i=0; i<sendingpacks.size(); ++i)
+						Message *response=core.handleClientMessage(*m);
+						if(response!=0)
 						{
-							int bytes_written = write(incommingFD, &(sendingpacks[i]), sizeof(Packet));
-							if(bytes_written < 0)
+							vector<Packet> sendingpacks=ph.packetVectorOfMessage(*response);
+							for(unsigned i=0; i<sendingpacks.size(); ++i)
 							{
-								cout<<"could not send anything to ServiceProvider"<<endl;
-								return -1;
+								int bytes_written = write(incommingFD, &(sendingpacks[i]), sizeof(Packet));
+								if(bytes_written < 0)
+								{
+									cout<<"could not send anything to ServiceProvider"<<endl;
+									return -1;
+								}
 							}
+							delete response;
 						}
 					}
 				}

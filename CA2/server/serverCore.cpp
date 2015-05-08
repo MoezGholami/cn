@@ -1,10 +1,86 @@
 #include "serverCore.h"
 
-ServiceProviderConnection::ServiceProviderConnection(int portnum)
+ServerCore::ServerCore()
+{
+	SwitchConnection=0;
+}
+
+ServerCore::~ServerCore()
+{
+	deleteSwitchConnection();
+	for(unsigned i=0; i<serviceProviderConnections.size(); ++i)
+		delete serviceProviderConnections[i];
+}
+
+int ServerCore::doServerCommand()
+{
+	string command, parse;
+	stringstream ss;
+	getline(cin, command);
+	ss<<command;
+	ss>>parse;
+	if(parse!="Connect")
+		return 0;
+	ss>>parse;
+	if(parse=="Switch")
+	{
+		int pn;
+		ss>>pn;
+		connectToSwitch(pn);
+		if(SwitchConnection!=0 && SwitchConnection->isOkay())
+			return SwitchConnection->getFD();
+		else
+			return 0;
+	}
+	else if(parse=="Service")
+	{
+		ss>>parse;
+		int pn;
+		ss>>pn;
+		if(find_if(serviceProviderConnections.begin(), serviceProviderConnections.end(),
+					Client_Like_ConnectionFinderByPort(pn))!=serviceProviderConnections.end())
+			cout<<"already connected.\n";
+		else
+		{
+			Client_Like_Connection *cl=new Client_Like_Connection(pn);
+			if(cl->isOkay())
+				serviceProviderConnections.push_back(cl);
+			else
+				delete cl;
+		}
+	}
+	else
+	{
+		cout<<"input not recognized\n";
+	}
+	return 0;
+}
+
+void ServerCore::connectToSwitch(int pn)
+{
+	if(SwitchConnection!=0)
+	{
+		cout<<"already connected to a switch.\n";
+		return ;
+	}
+	SwitchConnection=new Client_Like_Connection(pn);
+	if(!SwitchConnection->isOkay())
+		deleteSwitchConnection();
+}
+
+void ServerCore::deleteSwitchConnection()
+{
+	if(SwitchConnection)
+		delete SwitchConnection;
+	SwitchConnection=0;
+}
+
+Client_Like_Connection::Client_Like_Connection(int portnum)
 {
 	connectionOkay=false;
 	serviceProviderIP="127.0.0.1";
 
+	port=portnum;
 	clear_buff(input_buffer, STR_SIZE);
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	struct sockaddr_in serv_addr;
@@ -22,36 +98,41 @@ ServiceProviderConnection::ServiceProviderConnection(int portnum)
 	}
 }
 
-ServiceProviderConnection::~ServiceProviderConnection()
+Client_Like_Connection::~Client_Like_Connection()
 {
 	close();
 }
 
-void ServiceProviderConnection::close()
+void Client_Like_Connection::close()
 {
 	if(!connectionOkay)
 		return ;
 	connectionOkay=false;
-	close(fd);
+	::close(fd);
 }
 
-int ServiceProviderConnection::getFD()
+int Client_Like_Connection::getFD() const
 {
 	return fd;
 }
 
-bool ServiceProviderConnection::isOkay()
+int Client_Like_Connection::getPort() const
+{
+	return port;
+}
+
+bool Client_Like_Connection::isOkay() const
 {
 	return connectionOkay;
 }
 
-string ServiceProviderConnection::sendQuery(const string &q)
+string Client_Like_Connection::sendServiceProviderQuery(const string &q)
 {
 	if(!isOkay())
 		return "connection is corrupted.";
 	
 	Message sending(q,Macaddr("0.0.0.0.0.0"),Macaddr("0.0.0.0.0.0"),0);
-	packetHandler ph;
+	PacketHandler ph;
 	vector<Packet> sendingpacks=ph.packetVectorOfMessage(sending);
 	for(unsigned i=0; i<sendingpacks.size(); ++i)
 	{
@@ -78,6 +159,16 @@ string ServiceProviderConnection::sendQuery(const string &q)
 		m=ph.messageOfPackets(p);
 	}
 	return m->value;
+}
+
+Client_Like_ConnectionFinderByPort::Client_Like_ConnectionFinderByPort(int p)
+{
+	port=p;
+}
+
+bool Client_Like_ConnectionFinderByPort::operator()(Client_Like_Connection *cl)
+{
+	return port==cl->getPort();
 }
 
 void clear_buff(char *x,size_t s){
