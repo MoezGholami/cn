@@ -16,4 +16,7 @@ class Message
 		Message(const string &val, Macaddr sadr, Macaddr recadr, uint8_t mn);
 };
 
+//caution: the result shoud be deleted after using.
+Message* generateResponse(const string &response, const Message &m);
+
 #endif

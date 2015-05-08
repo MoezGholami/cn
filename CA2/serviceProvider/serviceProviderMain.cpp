@@ -8,6 +8,10 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <cstdlib>
+#include "../packetHandler/packetHandler.h"
+#include "../packetHandler/message.h"
+#include "../packetHandler/packet.h"
+#include "serviceProviderCore.h"
 
 using namespace std;
 
@@ -29,6 +33,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	int port_number=atoi(argv[1]);
+	ServiceProviderCore core(port_number);
 	const int num_of_connection = 4;
 	int server_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	struct sockaddr_in server_addr;
@@ -38,7 +43,6 @@ int main(int argc, char* argv[])
 
 	cout<<"Listening from socket ...\n";
 
-	struct sockaddr_in client_addr;
 	//binding 
 	int binding_st = bind(server_fd,(struct sockaddr*) &server_addr, sizeof(server_addr));
 	if(binding_st == -1)
@@ -55,7 +59,6 @@ int main(int argc, char* argv[])
 	}
 	fd_set read_fdset, temp_fdset;
 	struct timeval tv;
-	int ret_val;
 	int new_sock_fd, it_fd;
 
 	/* Watch stdin (fd 0) to see when it has input. */
@@ -67,12 +70,16 @@ int main(int argc, char* argv[])
 	tv.tv_sec = 10 * 60;
 	tv.tv_usec = 0;
 
-	unsigned int size_of_client_addr = sizeof(client_addr);
-
 	int status;
+
+	PacketHandler *php=0;
+	Message *mes;
 
 	while(1)
 	{
+		mes=0;
+		if(php==0)
+			php=new PacketHandler();
 		memcpy(&temp_fdset, &read_fdset, sizeof(temp_fdset));
 		status = select(FD_SETSIZE, &temp_fdset, (fd_set *)0, (fd_set *)0, (struct timeval*) &tv);
 		if(status < 1)
@@ -105,12 +112,13 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					int n, m;
+					int n;
 					char buff_read [STR_SIZE], response_buff[STR_SIZE];
 					clear_buff(buff_read, STR_SIZE);
 					clear_buff(response_buff, STR_SIZE);
+					Packet p;
 
-					n = read(it_fd, buff_read, STR_SIZE-1);
+					n = read(it_fd, &p, sizeof(Packet));
 					if(n == 0)
 					{
 						close(it_fd);
@@ -121,17 +129,32 @@ int main(int argc, char* argv[])
 					{
 						cerr<<"Error reading"<<endl;
 					}
-
 					//after reading successfully
 					else
 					{
-						string clientInput = buff_read, serverReply;
-						//receive from client, repeat it
-						serverReply=clientInput;
-						cout<<"new query got.\n";
-						int s = write(it_fd, serverReply.c_str(), serverReply.size());
-						if(s < 0)
-							cerr<<"send reply error\n";
+						mes=php->messageOfPackets(p);
+						if(mes!=0)
+						{
+							cout<<"new query got.\n";
+							Message *response=0;
+							string clientInput = buff_read, serverReply;
+							//receive from client, repeat it
+							serverReply=core.doCommand(clientInput);
+							response=generateResponse(serverReply, *mes);
+							vector<Packet> packs=php->packetVectorOfMessage(*response);
+							for(unsigned i=0; i<packs.size(); ++i)
+							{
+								int s = write(it_fd, &(packs[i]), sizeof(Packet));
+								if(s < 0)
+								{
+									cerr<<"send reply error\n";
+									return -1;
+								}
+							}
+							delete response;
+							delete php;
+							php=0;
+						}
 					}
 				}
 			}
