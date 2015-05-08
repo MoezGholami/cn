@@ -2,6 +2,14 @@
 
 PacketHandler::PacketHandler()
 {
+	givingMessage=0;
+}
+
+PacketHandler::~PacketHandler()
+{
+	if(givingMessage!=0)
+		delete givingMessage;
+	givingMessage=0;
 }
 
 vector<Packet> PacketHandler::packetVectorOfMessage(Message m)
@@ -34,13 +42,11 @@ Packet PacketHandler::packetOfMessage(Message m, uint32_t packnumber)
 		result.data[i]=(uint8_t)m.value[i];
 	for(; i<23; ++i)
 		result.data[i]=0;
-	/*
 	for(i=0; i<6; ++i)
 		result.crc[i]=0;
 	uint32_t *crcPos;
 	crcPos=(uint32_t *)&(result.crc[0]);
 	*crcPos=siamoz_crc32(&(result.data[0]),23);
-	*/
 	return result;
 }
 
@@ -49,30 +55,38 @@ Message* PacketHandler::messageOfPackets(Packet p)
 	vector<Packet>::iterator it;
 	it=find_if(allPackets.begin(), allPackets.end(),PacketFinderWithCompleteID(p));
 	if(it!=allPackets.end())
+	{
 		return 0;	//return null if duplicate packet
+	}
 	allPackets.push_back(p);
 	return getMessageFromPacketVector(p);
 }
 
 Message* PacketHandler::getMessageFromPacketVector(const Packet &sample)
 {
+	static char buffer[24]={0};
 	string resultVal="";
 	uint32_t i=0;
 	vector<Packet>::iterator it;
 	for(i=0; true; i+=2)
 	{
 		it=find_if(allPackets.begin(), allPackets.end(), PacketFinderWithCompleteID(sample.daddr,
-							sample.saddr,*((uint8_t *)(&(sample.packid))), i));
+							sample.saddr,*((uint8_t *)(&(sample.packid))+sizeof(sample.packid)-1), i));
 		if(it==allPackets.end())
 			break ;
-		resultVal+=(char *)(it->data);
+		memcpy((void *)buffer, it->data, 23);
+		resultVal+=buffer;
 	}
 	it=find_if(allPackets.begin(), allPackets.end(), PacketFinderWithCompleteID(sample.daddr,
-						sample.saddr,*((uint8_t *)(&(sample.packid))), i+1));
+						sample.saddr,*((uint8_t *)(&(sample.packid))+sizeof(sample.packid)-1), i+1));
 	if(it==allPackets.end())
 		return 0;
-	resultVal+=(char *)(it->data);
-	return new Message(resultVal, sample.saddr, sample.daddr, *((uint8_t *)(&(sample.packid))));
+	memcpy((void *)buffer, it->data, 23);
+	resultVal+=buffer;
+	if(givingMessage!=0)
+		delete givingMessage;
+	givingMessage= new Message(resultVal, sample.saddr, sample.daddr, *((uint8_t *)(&(sample.packid))));
+	return givingMessage;
 }
 
 PacketFinderWithCompleteID::PacketFinderWithCompleteID(Macaddr r, Macaddr s, uint8_t mn, uint32_t pid)
