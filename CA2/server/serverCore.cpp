@@ -102,6 +102,7 @@ Message* ServerCore::handleOurMessage(const Message &m)
 	if(parse=="Send")
 		return handleAppend(m);
 		//the difference between appen and send is not in ServerCore, it is in ServiceProvider.
+	cout << "no valid command got fron client. command = "<< m.value <<endl;
 	return generateResponse("no valid command.",m);
 }
 

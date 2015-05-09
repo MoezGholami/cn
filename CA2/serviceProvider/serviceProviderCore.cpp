@@ -31,6 +31,7 @@ string ServiceProviderCore::doCommand(const string &command)
 		return resultOfAppendRequest(command);
 	if(parse=="Send")
 		return resultOfSendReques(command);
+	cout<<"no valid command got from server. command =" << command<<endl;
 	return "no valid command.";
 }
 

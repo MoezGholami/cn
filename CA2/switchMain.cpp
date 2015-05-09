@@ -78,7 +78,11 @@ int main(int argn, char** args)
 			{
 				if(it_fd == STDIN)
 				{
-					scc.doServerCommand();	
+					int new_sock_s;
+					new_sock_s = scc.doServerCommand();	
+					if( new_sock_s != -1){
+						FD_SET(new_sock_s, &read_fdset);
+					}
 				}
 				else if(it_fd == server_fd)
 				{	
@@ -99,12 +103,12 @@ int main(int argn, char** args)
 					Packet sendingPacket;
 					//clear_buff(buff_read, STR_SIZE);
 					//clear_buff(response_buff, STR_SIZE);
-
 					n = read(it_fd, (char*)(&sendingPacket), sizeof(Packet));
 					if(n == 0)
 					{
 						close(it_fd);
 						FD_CLR(it_fd, &read_fdset);
+						// TODO remove it from fds .........
 						cerr<<"client out"<<endl;
 					}
 					else if(n < 0)

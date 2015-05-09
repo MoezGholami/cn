@@ -137,9 +137,9 @@ int main(int argc, char* argv[])
 						{
 							cout<<"new query got.\n";
 							Message *response=0;
-							string clientInput = buff_read, serverReply;
+							string serverReply;
 							//receive from client, repeat it
-							serverReply=core.doCommand(clientInput);
+							serverReply=core.doCommand(mes->value);
 							response=generateResponse(serverReply, *mes);
 							vector<Packet> packs=php->packetVectorOfMessage(*response);
 							for(unsigned i=0; i<packs.size(); ++i)
@@ -153,6 +153,7 @@ int main(int argc, char* argv[])
 							}
 							delete response;
 							delete php;
+							mes=0;
 							php=0;
 						}
 					}

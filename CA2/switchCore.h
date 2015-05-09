@@ -37,7 +37,7 @@ class SwitchCoreClerk{
 	SwitchCoreClerk(int port_num);	
 	int updateSourcePort(Packet comm,int fd);
 	int getDestinationPort(Packet comm);
-	void doServerCommand();
+	int doServerCommand();
 	void forwardClientPacket(Packet comm,int fd);
 	void addFileDescriptor(int fd);
 	PacketHandler ph;

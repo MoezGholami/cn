@@ -13,6 +13,7 @@ int recv_packet(char *serverReply, int fd){
 			return n;
 		}
 	}
+		// NEVER USED SSSSSSSSSSSSSSSSSSSSSSSSS
 	if(mssg==NULL)
 		cout<<"WTF"<<endl;
 	cerr<<"nulled"<<endl;
@@ -30,7 +31,7 @@ Macfd::Macfd(Macaddr mc,int filedis){
 	fd = filedis;
 }
 
-void SwitchCoreClerk::doServerCommand(){
+int SwitchCoreClerk::doServerCommand(){
 	string comm1,comm2;
 	cin>>comm1;
 	int portNu;
@@ -56,10 +57,10 @@ void SwitchCoreClerk::doServerCommand(){
 				cerr<<"Conention failed\n";
 			}
 			else cerr<<"Successfully Connected\n";
-						
+			return fd;			
 		}
 	}
-
+	return -1;
 }
 
 int SwitchCoreClerk::updateSourcePort(Packet comm, int fd){
@@ -88,15 +89,17 @@ void SwitchCoreClerk::addFileDescriptor(int fd){
 
 void SwitchCoreClerk::forwardClientPacket(Packet comm, int fd){
 	//routingTable[comm.saddr] = fd;
-	cout<<"forwarding packet..."<<endl;
+	cerr<<"------------------------------"<<endl;
+	cout<<"fds size = "<<fds.size()<<endl;
 	char x[24] = { 0 };
 	memcpy(x,comm.data,23);
 	string mes;
 	mes = x;
-	cout<<"pp packet: "<<mes<<endl;
 	int sourcefd = updateSourcePort(comm,fd);
 	int destfd = getDestinationPort(comm);
+	cerr<<"pp packet: "<<mes<<endl;
 	if(destfd!=-1){
+		cerr<<"forwarding for fd :"<<destfd<<endl;
 		int s = write(destfd, (char*)(&comm), sizeof(Packet));
 		if(s < 0)
 			cerr<<"send reply error\n";
@@ -104,6 +107,7 @@ void SwitchCoreClerk::forwardClientPacket(Packet comm, int fd){
 	} else {
 		for(int i=0;i<fds.size();i++){	
 		if(fds[i]!=fd){
+			cout<<"broadcasting- for fd :"<<fds[i]<<endl;
 			int s = write(fds[i], (char*)(&comm), sizeof(Packet));
 			if(s < 0)
 				cerr<<"send reply error\n";
