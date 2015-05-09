@@ -16,7 +16,7 @@ using namespace std;
 #define STR_SIZE 20480
 const string adminPass = "1234";
 const string adminName = "Admin";
-const string serverMacAddr = "192:168:177:0:0:1";
+const string serverMacAddr = "192:168:1:1:1:1";
 
 void clear_buff(char *x,size_t s){
 	for(int i=0;i<s;i++){
@@ -48,7 +48,6 @@ int recv_packet(char *serverReply, int fd){
 	}
 	if(mssg==NULL)
 		cout<<"WTF"<<endl;
-	cerr<<"nulled"<<endl;
 	serverReply = &(mssg->value[0]);
 	return n;
 }
@@ -123,7 +122,7 @@ int main(int argn, char** args){
 					if(parse1 == "Get"){
 						ss >> parse1 >> parse2 >> parse3 ;
 						if(parse1 == "List" && parse2 == "of" && parse3 == "Services"){
-							clientComm = "GETSERVICES";
+							clientComm = origin;
 							int bytes_written = send_packet(clientComm,fd,clientMacAddr,gMID);
 							if(bytes_written < 0){
 							cerr<<"Packet not sent"<<endl;

@@ -16,7 +16,7 @@
 using namespace std;
 
 void clear_buff(char *x,size_t s){
-	for(int i=0;i<s;i++){
+	for(int i=0;i<(int)s;i++){
 		x[i] = 0;
 	}
 }

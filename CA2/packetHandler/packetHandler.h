@@ -5,6 +5,7 @@
 #include "message.h"
 #include <vector>
 #include <algorithm>
+#include <cstring>
 #include "crc.h"
 
 using namespace std;

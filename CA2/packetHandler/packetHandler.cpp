@@ -17,7 +17,7 @@ vector<Packet> PacketHandler::packetVectorOfMessage(Message m)
 	vector<Packet> result;
 	int i;
 
-	for(i=0; i<m.value.size()/23; ++i)
+	for(i=0; i<(int)m.value.size()/23; ++i)
 		result.push_back(packetOfMessage(Message(m.value.substr(23*i, 23), m.senderadr, m.receiveradr, m.number), 2*i));
 	if(m.value.size()%23)
 		result.push_back(packetOfMessage(Message(m.value.substr(23*i, m.value.size()%23), m.senderadr, m.receiveradr
