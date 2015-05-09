@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <sstream>
 #include <algorithm>
+#include <map>
 #include "../packetHandler/message.h"
 #include "../packetHandler/packet.h"
 #include "../packetHandler/packetHandler.h"
@@ -54,9 +55,23 @@ class ServerCore
 	protected:
 		Client_Like_Connection *SwitchConnection;
 		vector<Client_Like_Connection *> serviceProviderConnections;
+		map<Macaddr, string> clientNames;
+		map<Macaddr, vector<string> > writableFiles;
 
 		void deleteSwitchConnection();
 		void connectToSwitch(int pn);
+		void removeCorruptedServiceProviders();
+		Message* handleOurMessage(const Message &m);
+		Message* handleLogin(const Message &m);
+		Message* handleLogout(const Message &m);
+		Message* handleGetList(const Message &m);
+		Message* handleRequest(const Message &m);
+		Message* handleAppend(const Message &m);
+
+		void login(const Macaddr &s, const string &name);
+		void logout(const Macaddr &s);
+
+		Client_Like_Connection* findProviderOf(const string &fname);
 };
 
 class Client_Like_ConnectionFinderByPort

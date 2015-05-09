@@ -25,6 +25,11 @@ void write2File_entire(const string &url, const string &s)
 	out.close();
 }
 
+int deleteFirstLineOfFile(const string &url)
+{
+	return system(("tail -n +2 "+url+" > url").c_str());
+}
+
 void append2File(const string &url, const string &s)
 {
 	ofstream fout;
@@ -32,3 +37,23 @@ void append2File(const string &url, const string &s)
 	fout<<endl<<s;
 	fout.close();
 }
+
+bool FileExist(const string &url)
+{
+	fstream f;
+	try
+	{
+		f.open(url.c_str(), ios::in | ios::binary);
+		if(f.good())
+		{
+			f.close();
+			return true;
+		}
+	}
+	catch(const fstream::failure &E)
+	{
+		return false;
+	}
+	return false;
+}
+

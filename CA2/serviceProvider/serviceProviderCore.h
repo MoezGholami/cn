@@ -3,11 +3,10 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
 #include "../util/util.h"
 
 using namespace std;
-
-string localServiceNames[]={"shangul", "mangul", "habbe", "angur"};
 
 class ServiceProviderCore
 {
@@ -15,10 +14,15 @@ class ServiceProviderCore
 		ServiceProviderCore(int pnum);
 		~ServiceProviderCore();
 
-		string listOfServices();
+		string doCommand(const string &command);
 	protected:
 		int portNum;
 		vector<string> localServices;
+
+		string listOfServices();
+		string readFile(const string &fname);
+		string resultOfAppendRequest(const string &command);
+		string resultOfSendReques(const string &command);
 };
 
 #endif
