@@ -70,3 +70,9 @@ ostream& operator<<(ostream &out, const Packet &p)
 	out<<"sender:\n"<<p.saddr<<endl<<"receiver:\n"<<p.daddr<<endl;
 	return out;
 }
+
+string valueOfPacket(Packet p)
+{
+	*(((char *)p.data)+sizeof(p.data)+1)=0;
+	return string((char *)p.data);
+}

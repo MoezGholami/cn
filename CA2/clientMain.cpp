@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <unistd.h>
 #include <map>
 
 using namespace std;
@@ -53,7 +54,7 @@ int recv_packet(char *serverReply, int fd, string clientMacAddr){
 	}
 	if(mssg==NULL)
 		cout<<"WTF"<<endl;
-	cout<< &(mssg->value[0]);
+	cout<< &(mssg->value[0])<<endl;
 	serverReply = &(mssg->value[0]);
 	return n;
 }
@@ -158,7 +159,6 @@ int main(int argn, char** args){
 					char res_buff[STR_SIZE];
 					clear_buff(res_buff, STR_SIZE);
 					int read_status = recv_packet(res_buff,fd,clientMacAddr);
-					cerr<<"123"<<endl;
 					reply = res_buff;
 					if(read_status <0){
 						cout<<"recieve failed"<<endl;

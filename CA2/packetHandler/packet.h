@@ -51,6 +51,8 @@ typedef struct Packet
 	uint8_t crc[6];		//crc check
 } Packet;
 
+string valueOfPacket(Packet p);
+
 ostream& operator<<(ostream &out, const Packet &p);
 
 #endif

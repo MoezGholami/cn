@@ -87,6 +87,9 @@ Message* ServerCore::handleOurMessage(const Message &m)
 {
 	string parse, parse2;
 	stringstream ss;
+
+	cout<<"client message:\n"<<m.value<<"\n\n";
+
 	ss<<m.value;
 	ss>>parse;
 	if(parse=="Login")
@@ -234,7 +237,7 @@ Client_Like_Connection* ServerCore::findProviderOf(const string &fname)
 	Client_Like_Connection *result=0;
 	for(unsigned i=0; i<serviceProviderConnections.size(); ++i)
 		if(string::npos != ((serviceProviderConnections[i])
-					->sendServiceProviderQuery("Get List Of Services")).find(fname))
+					->sendServiceProviderQuery("Get List Of Services")).find(fname+"\n"))
 		{
 			result=serviceProviderConnections[i];
 			break;

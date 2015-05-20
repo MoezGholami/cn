@@ -23,6 +23,8 @@ string ServiceProviderCore::doCommand(const string &command)
 	ss<<command;
 	ss>>parse;
 
+	cout<<"command:\n"<<command<<"\n\n";
+
 	if(parse=="Get")
 		return listOfServices();
 	if(parse=="read")
@@ -53,6 +55,8 @@ string ServiceProviderCore::readFile(const string &command)
 
 	if(find(localServices.begin(), localServices.end(), fname)==localServices.end())
 		return "no such service.";
+	if(!FileExist(fname))
+		return "::the file is empty::";
 	return wholeAsciiFile(fname);
 }
 
