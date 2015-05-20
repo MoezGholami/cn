@@ -1,6 +1,7 @@
 #include "./packetHandler/message.h"
 #include "./packetHandler/packetHandler.h"
 #include "./packetHandler/packet.h"
+#include "./util/util.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -64,6 +65,7 @@ int main(int argn, char** args){
 	int temp;
 	vector<string> participants;
 	string clientMacAddr = args[1];
+
 	while(1)
 	{
 		cin>>inputComm;
@@ -185,18 +187,71 @@ int main(int argn, char** args){
 					//cout<<res_buff<<endl;
 	
 				} else if(parse1 == "Send"){
-					// SEND THE FILE
-				} else if(parse1 == "Append"){
-					// Append the FILE
-				} else if(parse1 == "Logout"){
-					clientComm = origin;
-					int bytes_written = send_packet(clientComm,fd,clientMacAddr,gMID);
+					ss>>parse2;
+					if( !FileExist(parse2) ){
+						cout<<"The specifed file doesn't exist\n";
+						continue;
+					}
+					string datax = wholeAsciiFile(parse2);
+					clientComm = origin+"\n"+datax;
+					int bytes_written = send_packet(clientComm, fd, clientMacAddr,gMID);
 					if(bytes_written < 0){
 					cerr<<"Packet not sent"<<endl;
 					continue;
 					}
-					cout<<"Disconnected"<<endl;
-					break;
+					gMID++;
+					if(gMID==256) gMID = 0;
+					string reply;
+					//get response from server
+					char res_buff[STR_SIZE];
+					clear_buff(res_buff, STR_SIZE);
+					int read_status = recv_packet(res_buff, fd);
+					reply = res_buff;
+					if(read_status <0){
+						cout<<"recieve failed"<<endl;
+						continue;
+					}
+
+				} else if(parse1 == "Append"){
+					ss>> parse1 >> parse2 ;
+					clientComm = origin;
+					int bytes_written = send_packet(clientComm, fd, clientMacAddr,gMID);
+					if(bytes_written < 0){
+					cerr<<"Packet not sent"<<endl;
+					continue;
+					}
+					gMID++;
+					if(gMID==256) gMID = 0;
+					string reply;
+					//get response from server
+					char res_buff[STR_SIZE];
+					clear_buff(res_buff, STR_SIZE);
+					int read_status = recv_packet(res_buff, fd);
+					reply = res_buff;
+					if(read_status <0){
+						cout<<"recieve failed"<<endl;
+						continue;
+					}
+
+				} else if(parse1 == "Logout"){
+					clientComm = origin;
+					int bytes_written = send_packet(clientComm, fd, clientMacAddr,gMID);
+					if(bytes_written < 0){
+					cerr<<"Packet not sent"<<endl;
+					continue;
+					}
+					gMID++;
+					if(gMID==256) gMID = 0;
+					string reply;
+					//get response from server
+					char res_buff[STR_SIZE];
+					clear_buff(res_buff, STR_SIZE);
+					int read_status = recv_packet(res_buff, fd);
+					reply = res_buff;
+					if(read_status <0){
+						cout<<"recieve failed"<<endl;
+						continue;
+					}
 				}
 				else
 				{
