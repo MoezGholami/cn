@@ -36,14 +36,15 @@ int send_packet(string clientComm, int fd, string clientMacAddr,int gMID){
 	return s;
 }
 
-int recv_packet(char *serverReply, int fd){
+int recv_packet(char *serverReply, int fd, string clientMacAddr){
 	int n;
 	PacketHandler ph;
 	Packet recvPacket ;
 	Message *mssg = NULL;
 	while( mssg == NULL){
 		n = read(fd, (char*)(&recvPacket), sizeof(Packet));
-		mssg = ph.messageOfPackets(recvPacket);
+		if(recvPacket.daddr==Macaddr(clientMacAddr))
+			mssg = ph.messageOfPackets(recvPacket);
 		if( n<0 ){
 			return n;
 		}
@@ -106,7 +107,7 @@ int main(int argn, char** args){
 			//get response from server
 			char res_buff[STR_SIZE];
 			clear_buff(res_buff, STR_SIZE);
-			int read_status = recv_packet(res_buff, fd);
+			int read_status = recv_packet(res_buff, fd, clientMacAddr);
 			reply = res_buff;
 			cout<<res_buff<<endl;*/
 			// Eof test R&D
@@ -134,7 +135,7 @@ int main(int argn, char** args){
 						//get response from server
 						char res_buff[STR_SIZE];
 						clear_buff(res_buff, STR_SIZE);
-						int read_status = recv_packet(res_buff,fd);
+						int read_status = recv_packet(res_buff,fd, clientMacAddr);
 						reply = res_buff;
 						if(read_status <0){
 							cout<<"recieve failed"<<endl;
@@ -156,7 +157,7 @@ int main(int argn, char** args){
 					//get response from server
 					char res_buff[STR_SIZE];
 					clear_buff(res_buff, STR_SIZE);
-					int read_status = recv_packet(res_buff,fd);
+					int read_status = recv_packet(res_buff,fd,clientMacAddr);
 					cerr<<"123"<<endl;
 					reply = res_buff;
 					if(read_status <0){
@@ -178,7 +179,7 @@ int main(int argn, char** args){
 					//get response from server
 					char res_buff[STR_SIZE];
 					clear_buff(res_buff, STR_SIZE);
-					int read_status = recv_packet(res_buff, fd);
+					int read_status = recv_packet(res_buff, fd, clientMacAddr);
 					reply = res_buff;
 					if(read_status <0){
 						cout<<"recieve failed"<<endl;
@@ -205,7 +206,7 @@ int main(int argn, char** args){
 					//get response from server
 					char res_buff[STR_SIZE];
 					clear_buff(res_buff, STR_SIZE);
-					int read_status = recv_packet(res_buff, fd);
+					int read_status = recv_packet(res_buff, fd, clientMacAddr);
 					reply = res_buff;
 					if(read_status <0){
 						cout<<"recieve failed"<<endl;
@@ -226,7 +227,7 @@ int main(int argn, char** args){
 					//get response from server
 					char res_buff[STR_SIZE];
 					clear_buff(res_buff, STR_SIZE);
-					int read_status = recv_packet(res_buff, fd);
+					int read_status = recv_packet(res_buff, fd, clientMacAddr);
 					reply = res_buff;
 					if(read_status <0){
 						cout<<"recieve failed"<<endl;
@@ -246,7 +247,7 @@ int main(int argn, char** args){
 					//get response from server
 					char res_buff[STR_SIZE];
 					clear_buff(res_buff, STR_SIZE);
-					int read_status = recv_packet(res_buff, fd);
+					int read_status = recv_packet(res_buff, fd, clientMacAddr);
 					reply = res_buff;
 					if(read_status <0){
 						cout<<"recieve failed"<<endl;

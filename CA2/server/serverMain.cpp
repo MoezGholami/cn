@@ -57,7 +57,8 @@ int main(int argc, char* argv[])
 						cout<<"could not receive anything from ServiceProvider"<<endl;
 						return -2;
 					}
-					m=ph.messageOfPackets(p);
+					if(serverMacaddr==p.daddr)
+						m=ph.messageOfPackets(p);
 					if(m)
 					{
 						Message *response=core.handleClientMessage(*m);
