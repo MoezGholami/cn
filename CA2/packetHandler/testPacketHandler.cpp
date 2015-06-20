@@ -13,7 +13,6 @@ int main(int argc, char *argv[])
 	string tempFileName="temp.txt";
 	PacketHandler ph;
 	Packet p;
-	cout<<"size of packet (in mem management): "<<sizeof(Packet)<<endl;
 	Macaddr a("192:168:0:0:0:1");
 	Macaddr b("192:168:1:0:0:1");
 

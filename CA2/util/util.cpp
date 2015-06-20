@@ -27,7 +27,8 @@ void write2File_entire(const string &url, const string &s)
 
 int deleteFirstLineOfFile(const string &url)
 {
-	return system(("tail -n +2 "+url+" > url").c_str());
+	const string tempfile="tempfileeeeeeee23477979e";
+	return system(("tail -n +2 "+url+" > "+tempfile+" && mv "+tempfile+" "+url).c_str());
 }
 
 void append2File(const string &url, const string &s)

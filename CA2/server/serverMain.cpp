@@ -54,10 +54,11 @@ int main(int argc, char* argv[])
 					int read_status = read(incommingFD, &p, sizeof(Packet));
 					if(read_status < 0)
 					{
-						cout<<"could not receive anything from ServiceProvider"<<endl;
+						cout<<"could not receive anything from switch"<<endl;
 						return -2;
 					}
 					m=ph.messageOfPackets(p);
+					cout<<"gotten packet data:\n"<<valueOfPacket(p)<<"\n\n";
 					if(m)
 					{
 						Message *response=core.handleClientMessage(*m);
