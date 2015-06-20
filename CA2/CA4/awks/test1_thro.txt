@@ -1,0 +1,1 @@
+Average Throughput[kbps] = 317.51		 StartTime=0.50	StopTime=3.79

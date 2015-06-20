@@ -1,0 +1,9 @@
+
+
+GeneratedPackets = 427
+ReceivedPackets = 255
+Packet Delivery Ratio = 59.719
+Total Dropped Packets = 178
+Average End-to-End Delay = 55.9876 ms
+
+
